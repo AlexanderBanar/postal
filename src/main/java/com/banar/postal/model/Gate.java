@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class Gate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "delivery_id")
