@@ -26,6 +26,9 @@ public class Delivery {
     @Column(name = "receiver_name")
     private String receiverName;
 
+    @Column(name = "is_received")
+    private boolean isReceived = false;
+
     @Column(name = "delivery_type")
     @Enumerated(EnumType.STRING)
     private DeliveryType type = DeliveryType.UNDEFINED;
