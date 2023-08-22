@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Gate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

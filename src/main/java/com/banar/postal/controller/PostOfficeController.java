@@ -1,7 +1,7 @@
 package com.banar.postal.controller;
 
 import com.banar.postal.model.Delivery;
-import com.banar.postal.service.DeliveryService;
+import com.banar.postal.service.PostOfficeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +16,11 @@ public class PostOfficeController {
     private static final String RECEIVE_BY_ADDRESSEE = "/receive/{deliveryId}";
     private static final String GET_STATUS = "/status/{deliveryId}";
 
-    private DeliveryService deliveryService;
+    private PostOfficeService service;
 
     @PostMapping(value = REGISTER_NEW_DELIVERY, consumes = {"application/json"}, produces = {"application/json"})
     public ResponseEntity<Delivery> registerDelivery(@Valid @RequestBody Delivery delivery) {
-        Delivery registeredDelivery = deliveryService.register(delivery);
+        Delivery registeredDelivery = service.register(delivery);
 
         if (registeredDelivery.getId() == null) {
             throw new IllegalArgumentException("something went wrong while new delivery registration");
@@ -31,7 +31,11 @@ public class PostOfficeController {
 
     @PostMapping(value = ARRIVE_AT_POST_OFFICE, consumes = {"application/json"}, produces = {"application/json"})
     public ResponseEntity<Boolean> arriveAtPostOffice(@PathVariable("deliveryId") Long deliveryId, @PathVariable("postOfficeId") Long postOfficeId) {
-        return null;
+        if (service.processArrival(deliveryId, postOfficeId)) {
+            return ResponseEntity.ok(Boolean.TRUE);
+        }
+
+        throw new IllegalArgumentException("Arrival at post office not registered! Wrong delivery id or post office id!");
     }
 
     @PostMapping(value = DEPART_FROM_POST_OFFICE, consumes = {"application/json"}, produces = {"application/json"})
