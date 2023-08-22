@@ -51,4 +51,26 @@ public class PostOfficeService {
 
         return true;
     }
+
+    public boolean processReceipt(Long deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId).orElse(null);
+
+        if (delivery == null) {
+            return false;
+        }
+
+        Gate gateToClose = gateRepository.findByDeliveryIdAndDepartureDateIsNull(deliveryId);
+
+        LocalDate closureDate = LocalDate.now();
+
+        if (gateToClose != null) {
+            gateToClose.setDepartureDate(closureDate);
+            gateRepository.saveAndFlush(gateToClose);
+        }
+
+        delivery.setReceived(true);
+        deliveryRepository.saveAndFlush(delivery);
+
+        return true;
+    }
 }
