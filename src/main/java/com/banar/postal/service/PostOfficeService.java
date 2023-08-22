@@ -73,4 +73,8 @@ public class PostOfficeService {
 
         return true;
     }
+
+    public Delivery getDelivery(Long deliveryId) {
+        return deliveryRepository.findById(deliveryId).orElse(null);
+    }
 }

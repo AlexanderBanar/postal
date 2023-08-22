@@ -49,7 +49,7 @@ public class PostOfficeController {
     }
 
     @PostMapping(value = RECEIVE_BY_ADDRESSEE, consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<Boolean> receiveByAddressee(@PathVariable("deliveryId") Long deliveryId) {
+    public ResponseEntity<Boolean> receiveByAddressee(@NotNull @PathVariable("deliveryId") Long deliveryId) {
         if (service.processReceipt(deliveryId)) {
             return ResponseEntity.ok(Boolean.TRUE);
         }
@@ -58,8 +58,14 @@ public class PostOfficeController {
     }
 
     @GetMapping(value = GET_STATUS, consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<Delivery> getStatus(@PathVariable("deliveryId") Long deliveryId) {
-        return null;
+    public ResponseEntity<Delivery> getStatus(@NotNull @PathVariable("deliveryId") Long deliveryId) {
+        Delivery delivery = service.getDelivery(deliveryId);
+
+        if (delivery == null) {
+            throw new IllegalArgumentException("Wrong delivery id!");
+        }
+
+        return ResponseEntity.ok().body(delivery);
     }
 
 }
