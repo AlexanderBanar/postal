@@ -38,4 +38,17 @@ public class PostOfficeService {
 
         return gateRepository.saveAndFlush(gate).getId() != null;
     }
+
+    public boolean processDeparture(Long deliveryId, Long postOfficeId) {
+        Gate gate = gateRepository.findByDeliveryIdAndPostOfficeId(deliveryId, postOfficeId);
+
+        if (gate == null) {
+            return false;
+        }
+
+        gate.setDepartureDate(LocalDate.now());
+        gateRepository.saveAndFlush(gate);
+
+        return true;
+    }
 }

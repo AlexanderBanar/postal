@@ -3,6 +3,7 @@ package com.banar.postal.controller;
 import com.banar.postal.model.Delivery;
 import com.banar.postal.service.PostOfficeService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,17 +31,21 @@ public class PostOfficeController {
     }
 
     @PostMapping(value = ARRIVE_AT_POST_OFFICE, consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<Boolean> arriveAtPostOffice(@PathVariable("deliveryId") Long deliveryId, @PathVariable("postOfficeId") Long postOfficeId) {
+    public ResponseEntity<Boolean> arriveAtPostOffice(@NotNull @PathVariable("deliveryId") Long deliveryId, @NotNull @PathVariable("postOfficeId") Long postOfficeId) {
         if (service.processArrival(deliveryId, postOfficeId)) {
             return ResponseEntity.ok(Boolean.TRUE);
         }
 
-        throw new IllegalArgumentException("Arrival at post office not registered! Wrong delivery id or post office id!");
+        throw new IllegalArgumentException("Arrival at post office not processed! Wrong delivery id or post office id!");
     }
 
     @PostMapping(value = DEPART_FROM_POST_OFFICE, consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<Boolean> departFromPostOffice(@PathVariable("deliveryId") Long deliveryId, @PathVariable("postOfficeId") Long postOfficeId) {
-        return null;
+    public ResponseEntity<Boolean> departFromPostOffice(@NotNull @PathVariable("deliveryId") Long deliveryId, @NotNull @PathVariable("postOfficeId") Long postOfficeId) {
+        if (service.processDeparture(deliveryId, postOfficeId)) {
+            return ResponseEntity.ok(Boolean.TRUE);
+        }
+
+        throw new IllegalArgumentException("Departure from post office not processed! Wrong delivery id or post office id!");
     }
 
     @PostMapping(value = RECEIVE_BY_ADDRESSEE, consumes = {"application/json"}, produces = {"application/json"})
