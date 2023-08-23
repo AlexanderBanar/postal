@@ -37,7 +37,7 @@ public class Delivery {
     @Enumerated(EnumType.STRING)
     private DeliveryType type = DeliveryType.UNDEFINED;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "delivery", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "delivery_id")
     private List<Gate> gates;
 
