@@ -1,5 +1,6 @@
 package com.banar.postal.controller;
 
+import com.banar.postal.dto.DeliveryDTO;
 import com.banar.postal.model.Delivery;
 import com.banar.postal.service.PostOfficeService;
 import jakarta.validation.Valid;
@@ -8,26 +9,31 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
+import static com.banar.postal.dto.DeliveryDTO.convertToDeliveryDTO;
+import static com.banar.postal.dto.DeliveryDTO.convertToDelivery;
+
 @RestController
 @AllArgsConstructor
 public class PostOfficeController {
-    private static final String REGISTER_NEW_DELIVERY = "/register";
-    private static final String ARRIVE_AT_POST_OFFICE = "/arrive/{deliveryId}/{postOfficeId}";
-    private static final String DEPART_FROM_POST_OFFICE = "/depart/{deliveryId}/{postOfficeId}";
-    private static final String RECEIVE_BY_ADDRESSEE = "/receive/{deliveryId}";
-    private static final String GET_STATUS = "/status/{deliveryId}";
+    public static final String REGISTER_NEW_DELIVERY = "/register";
+    public static final String ARRIVE_AT_POST_OFFICE = "/arrive/{deliveryId}/{postOfficeId}";
+    public static final String DEPART_FROM_POST_OFFICE = "/depart/{deliveryId}/{postOfficeId}";
+    public static final String RECEIVE_BY_ADDRESSEE = "/receive/{deliveryId}";
+    public static final String GET_STATUS = "/status/{deliveryId}";
 
     private PostOfficeService service;
 
     @PostMapping(value = REGISTER_NEW_DELIVERY, consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<Delivery> registerDelivery(@Valid @RequestBody Delivery delivery) {
-        Delivery registeredDelivery = service.register(delivery);
+    public ResponseEntity<DeliveryDTO> registerDelivery(@Valid @RequestBody DeliveryDTO delivery) {
+        Delivery registeredDelivery = service.register(convertToDelivery(delivery));
 
         if (registeredDelivery.getId() == null) {
             throw new IllegalArgumentException("something went wrong while new delivery registration");
         }
 
-        return ResponseEntity.ok().body(registeredDelivery);
+        return ResponseEntity.ok().body(convertToDeliveryDTO(registeredDelivery, Collections.emptyList()));
     }
 
     @PostMapping(value = ARRIVE_AT_POST_OFFICE, consumes = {"application/json"}, produces = {"application/json"})
@@ -58,14 +64,14 @@ public class PostOfficeController {
     }
 
     @GetMapping(value = GET_STATUS, consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<Delivery> getStatus(@NotNull @PathVariable("deliveryId") Long deliveryId) {
-        Delivery delivery = service.getDelivery(deliveryId);
+    public ResponseEntity<DeliveryDTO> getStatus(@NotNull @PathVariable("deliveryId") Long deliveryId) {
+        DeliveryDTO deliveryDTO = service.getDeliveryDTO(deliveryId);
 
-        if (delivery == null) {
+        if (deliveryDTO == null) {
             throw new IllegalArgumentException("Wrong delivery id!");
         }
 
-        return ResponseEntity.ok().body(delivery);
+        return ResponseEntity.ok().body(deliveryDTO);
     }
 
 }

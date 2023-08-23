@@ -3,8 +3,6 @@ package com.banar.postal.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "post_office")
 @Getter
@@ -12,6 +10,7 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PostOffice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +24,5 @@ public class PostOffice {
 
     @Column(name = "address")
     private String address;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_office_id")
-    private List<Gate> gates;
 
 }

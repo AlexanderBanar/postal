@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "delivery")
 @Getter
@@ -13,6 +11,7 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +35,5 @@ public class Delivery {
     @Column(name = "delivery_type")
     @Enumerated(EnumType.STRING)
     private DeliveryType type = DeliveryType.UNDEFINED;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "delivery_id")
-    private List<Gate> gates;
 
 }
