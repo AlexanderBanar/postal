@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 public class PostOfficeController {
-    private static final String REGISTER_NEW_DELIVERY = "/register";
-    private static final String ARRIVE_AT_POST_OFFICE = "/arrive/{deliveryId}/{postOfficeId}";
-    private static final String DEPART_FROM_POST_OFFICE = "/depart/{deliveryId}/{postOfficeId}";
-    private static final String RECEIVE_BY_ADDRESSEE = "/receive/{deliveryId}";
-    private static final String GET_STATUS = "/status/{deliveryId}";
+    public static final String REGISTER_NEW_DELIVERY = "/register";
+    public static final String ARRIVE_AT_POST_OFFICE = "/arrive/{deliveryId}/{postOfficeId}";
+    public static final String DEPART_FROM_POST_OFFICE = "/depart/{deliveryId}/{postOfficeId}";
+    public static final String RECEIVE_BY_ADDRESSEE = "/receive/{deliveryId}";
+    public static final String GET_STATUS = "/status/{deliveryId}";
 
     private PostOfficeService service;
 

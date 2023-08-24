@@ -12,6 +12,7 @@ import java.util.List;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PostOffice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
