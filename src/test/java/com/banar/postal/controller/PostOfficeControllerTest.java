@@ -27,6 +27,14 @@ import static org.hamcrest.Matchers.*;
 @AutoConfigureMockMvc
 class PostOfficeControllerTest {
 
+    private static final String RECEIVER_ADDRESS = "address";
+    private static final String RECEIVER_NAME = "Ivan";
+    private static final String RECEIVER_INDEX = "index";
+    private static final String POST_OFFICE_ADDRESS = "Post Office address";
+    private static final String POST_OFFICE_NAME = "Post Office";
+    private static final String POST_OFFICE_INDEX = "Post Office index";
+    private static final Long WRONG_ID = 5L;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -62,15 +70,15 @@ class PostOfficeControllerTest {
     @Test
     public void whenRegisterAndNok() throws Exception {
         Delivery deliveryHavingJustName = Delivery.builder()
-                .receiverName("Ivan")
+                .receiverName(RECEIVER_NAME)
                 .build();
 
         Delivery deliveryHavingJustIndex = Delivery.builder()
-                .receiverIndex("123456")
+                .receiverIndex(RECEIVER_INDEX)
                 .build();
 
         Delivery deliveryHavingJustAddress = Delivery.builder()
-                .receiverAddress("address")
+                .receiverAddress(RECEIVER_ADDRESS)
                 .build();
 
         registerNokTry(deliveryHavingJustName);
@@ -87,15 +95,46 @@ class PostOfficeControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(content().string(Boolean.TRUE.toString()));
 
         Gate gate = gateRepository.findByDeliveryIdAndDepartureDateIsNull(delivery.getId());
+        assertThat(gate.getArrivalDate(), is(notNullValue()));
         assertThat(gate.getId(), is(notNullValue()));
     }
 
     @Test
     public void whenArriveAndNok() throws Exception {
-        mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, 5, 7)
+        mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, WRONG_ID, WRONG_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult ->
+                        mvcResult.getResolvedException().getClass().equals(IllegalArgumentException.class));
+    }
+
+    @Test
+    public void whenDepartAndOk() throws Exception {
+        Delivery delivery = deliveryRepository.saveAndFlush(getPreparedDelivery());
+        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice1());
+
+        mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post(DEPART_FROM_POST_OFFICE, delivery.getId(), postOffice.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(Boolean.TRUE.toString()));
+
+        Gate gate = gateRepository.findByDeliveryIdAndPostOfficeId(delivery.getId(), postOffice.getId());
+        assertThat(gate.getArrivalDate(), is(notNullValue()));
+        assertThat(gate.getDepartureDate(), is(notNullValue()));
+    }
+
+    @Test
+    public void whenDepartAndNok() throws Exception {
+        mockMvc.perform(post(DEPART_FROM_POST_OFFICE, WRONG_ID, WRONG_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(mvcResult ->
@@ -112,17 +151,12 @@ class PostOfficeControllerTest {
     }
 
     private static Delivery getPreparedDelivery() {
-        return Delivery.builder().receiverAddress("address").receiverIndex("123456").receiverName("Ivan").type(DeliveryType.LETTER)
+        return Delivery.builder().receiverAddress(RECEIVER_ADDRESS).receiverIndex(RECEIVER_INDEX).receiverName(RECEIVER_NAME).type(DeliveryType.LETTER)
                 .build();
     }
 
     private static PostOffice getPreparedPostOffice1() {
-        return PostOffice.builder().name("Post Office 1").address("postOffice address 1").index("post office 1 index")
-                .build();
-    }
-
-    private static PostOffice getPreparedPostOffice2() {
-        return PostOffice.builder().name("Post Office 2").address("postOffice address 2").index("post office 2 index")
+        return PostOffice.builder().name(POST_OFFICE_NAME).address(POST_OFFICE_ADDRESS).index(POST_OFFICE_INDEX)
                 .build();
     }
 
