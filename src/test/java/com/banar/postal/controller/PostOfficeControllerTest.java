@@ -141,6 +141,40 @@ class PostOfficeControllerTest {
                         mvcResult.getResolvedException().getClass().equals(IllegalArgumentException.class));
     }
 
+    @Test
+    public void whenReceiveAndOk() throws Exception {
+        Delivery delivery = deliveryRepository.saveAndFlush(getPreparedDelivery());
+        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice1());
+
+        mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post(DEPART_FROM_POST_OFFICE, delivery.getId(), postOffice.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post(RECEIVE_BY_ADDRESSEE, delivery.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(Boolean.TRUE.toString()));
+
+        Delivery receivedDelivery = deliveryRepository.findById(delivery.getId()).orElse(new Delivery());
+        assertThat(receivedDelivery.isReceived(), is(true));
+    }
+
+    @Test
+    public void whenReceiveAndNok() throws Exception {
+        mockMvc.perform(post(RECEIVE_BY_ADDRESSEE, WRONG_ID)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult ->
+                        mvcResult.getResolvedException().getClass().equals(IllegalArgumentException.class));
+    }
+
     private void registerNokTry(Delivery delivery) throws Exception {
         mockMvc.perform(post(REGISTER_NEW_DELIVERY)
                 .content(objectMapper.writeValueAsString(delivery))
