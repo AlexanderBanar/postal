@@ -3,8 +3,6 @@ package com.banar.postal.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "post_office")
 @Getter
@@ -26,9 +24,5 @@ public class PostOffice {
 
     @Column(name = "address")
     private String address;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "post_office_id")
-    private List<Gate> gates;
 
 }

@@ -18,16 +18,9 @@ public class Gate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "delivery_id")
-    private Delivery delivery;
-
-    @ManyToOne
-    @JoinColumn(name = "post_office_id")
-    private PostOffice postOffice;
-
+    private Long deliveryId;
+    private Long postOfficeId;
     private LocalDate arrivalDate;
-
     private LocalDate departureDate;
 
 }

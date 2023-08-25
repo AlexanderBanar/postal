@@ -1,5 +1,6 @@
 package com.banar.postal.controller;
 
+import com.banar.postal.dto.DeliveryDTO;
 import com.banar.postal.model.Delivery;
 import com.banar.postal.model.DeliveryType;
 import com.banar.postal.model.Gate;
@@ -7,7 +8,9 @@ import com.banar.postal.model.PostOffice;
 import com.banar.postal.repository.DeliveryRepository;
 import com.banar.postal.repository.GateRepository;
 import com.banar.postal.repository.PostOfficeRepository;
+import com.banar.postal.service.PostOfficeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,7 @@ import static com.banar.postal.controller.PostOfficeController.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static com.banar.postal.dto.DeliveryDTO.convertToDelivery;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,6 +55,9 @@ class PostOfficeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private PostOfficeService postOfficeService;
+
     @AfterEach
     public void resetDBs() {
         deliveryRepository.deleteAll();
@@ -61,7 +68,7 @@ class PostOfficeControllerTest {
     @Test
     public void registerAndOk() throws Exception {
         mockMvc.perform(post(REGISTER_NEW_DELIVERY)
-                .content(objectMapper.writeValueAsString(getPreparedDelivery()))
+                .content(objectMapper.writeValueAsString(getPreparedDeliveryDTO()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -70,27 +77,27 @@ class PostOfficeControllerTest {
 
     @Test
     public void whenRegisterAndNok() throws Exception {
-        Delivery deliveryHavingJustName = Delivery.builder()
+        DeliveryDTO deliveryDTOHavingJustName = DeliveryDTO.builder()
                 .receiverName(RECEIVER_NAME)
                 .build();
 
-        Delivery deliveryHavingJustIndex = Delivery.builder()
+        DeliveryDTO deliveryDTOHavingJustIndex = DeliveryDTO.builder()
                 .receiverIndex(RECEIVER_INDEX)
                 .build();
 
-        Delivery deliveryHavingJustAddress = Delivery.builder()
+        DeliveryDTO deliveryDTOHavingJustAddress = DeliveryDTO.builder()
                 .receiverAddress(RECEIVER_ADDRESS)
                 .build();
 
-        registerNokTry(deliveryHavingJustName);
-        registerNokTry(deliveryHavingJustIndex);
-        registerNokTry(deliveryHavingJustAddress);
+        registerNokTry(deliveryDTOHavingJustName);
+        registerNokTry(deliveryDTOHavingJustIndex);
+        registerNokTry(deliveryDTOHavingJustAddress);
     }
 
     @Test
     public void whenArriveAndOk() throws Exception {
-        Delivery delivery = deliveryRepository.saveAndFlush(getPreparedDelivery());
-        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice1());
+        Delivery delivery = deliveryRepository.saveAndFlush(convertToDelivery(getPreparedDeliveryDTO()));
+        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice());
 
         mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -114,8 +121,8 @@ class PostOfficeControllerTest {
 
     @Test
     public void whenDepartAndOk() throws Exception {
-        Delivery delivery = deliveryRepository.saveAndFlush(getPreparedDelivery());
-        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice1());
+        Delivery delivery = deliveryRepository.saveAndFlush(convertToDelivery(getPreparedDeliveryDTO()));
+        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice());
 
         mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -144,8 +151,8 @@ class PostOfficeControllerTest {
 
     @Test
     public void whenReceiveAndOk() throws Exception {
-        Delivery delivery = deliveryRepository.saveAndFlush(getPreparedDelivery());
-        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice1());
+        Delivery delivery = deliveryRepository.saveAndFlush(convertToDelivery(getPreparedDeliveryDTO()));
+        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice());
 
         mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -176,53 +183,58 @@ class PostOfficeControllerTest {
                         mvcResult.getResolvedException().getClass().equals(IllegalArgumentException.class));
     }
 
-//    @Test
-//    public void getStatusAndOk() throws Exception {
-//        Delivery delivery = deliveryRepository.saveAndFlush(getPreparedDelivery());
-//        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice1());
-//
-//        mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//
-//        mockMvc.perform(post(DEPART_FROM_POST_OFFICE, delivery.getId(), postOffice.getId())
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//
-//        mockMvc.perform(post(RECEIVE_BY_ADDRESSEE, delivery.getId())
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//
-//        final String path = "/status/" + delivery.getId();
-//        System.out.println(path);
-//
-//        Delivery updatedDelivery = deliveryRepository.findById(delivery.getId()).orElse(new Delivery());
-//        mockMvc.perform(get(path)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.gates").value("gate"));
-//
-//    }
+    @Test
+    public void getStatusAndOk() throws Exception {
+        Delivery delivery = deliveryRepository.saveAndFlush(convertToDelivery(getPreparedDeliveryDTO()));
+        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice());
 
-    private void registerNokTry(Delivery delivery) throws Exception {
-        mockMvc.perform(post(REGISTER_NEW_DELIVERY)
-                .content(objectMapper.writeValueAsString(delivery))
+        mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post(DEPART_FROM_POST_OFFICE, delivery.getId(), postOffice.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post(RECEIVE_BY_ADDRESSEE, delivery.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        DeliveryDTO deliveryDTO = postOfficeService.getDeliveryDTO(delivery.getId());
+        mockMvc.perform(get(GET_STATUS, delivery.getId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(deliveryDTO)));
+    }
+
+    @Test
+    public void getStatusAndNok() throws Exception {
+        mockMvc.perform(get(GET_STATUS, WRONG_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(mvcResult ->
                         mvcResult.getResolvedException().getClass().equals(IllegalArgumentException.class));
     }
 
-    private static Delivery getPreparedDelivery() {
-        return Delivery.builder().receiverAddress(RECEIVER_ADDRESS).receiverIndex(RECEIVER_INDEX).receiverName(RECEIVER_NAME).type(DeliveryType.LETTER)
+    private void registerNokTry(DeliveryDTO deliveryDTO) throws Exception {
+        mockMvc.perform(post(REGISTER_NEW_DELIVERY)
+                .content(objectMapper.writeValueAsString(deliveryDTO))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(mvcResult ->
+                        mvcResult.getResolvedException().getClass().equals(ConstraintViolationException.class));
+    }
+
+    private static DeliveryDTO getPreparedDeliveryDTO() {
+        return DeliveryDTO.builder().receiverAddress(RECEIVER_ADDRESS).receiverIndex(RECEIVER_INDEX).receiverName(RECEIVER_NAME).type(DeliveryType.LETTER)
                 .build();
     }
 
-    private static PostOffice getPreparedPostOffice1() {
+    private static PostOffice getPreparedPostOffice() {
         return PostOffice.builder().name(POST_OFFICE_NAME).address(POST_OFFICE_ADDRESS).index(POST_OFFICE_INDEX)
                 .build();
     }

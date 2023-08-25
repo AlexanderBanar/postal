@@ -1,5 +1,6 @@
 package com.banar.postal.service;
 
+import com.banar.postal.dto.DeliveryDTO;
 import com.banar.postal.model.Delivery;
 import com.banar.postal.model.Gate;
 import com.banar.postal.model.PostOffice;
@@ -10,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -31,8 +33,8 @@ public class PostOfficeService {
         }
 
         Gate gate = Gate.builder()
-                .delivery(delivery)
-                .postOffice(postOffice)
+                .deliveryId(delivery.getId())
+                .postOfficeId(postOffice.getId())
                 .arrivalDate(LocalDate.now())
                 .build();
 
@@ -74,7 +76,15 @@ public class PostOfficeService {
         return true;
     }
 
-    public Delivery getDelivery(Long deliveryId) {
-        return deliveryRepository.findById(deliveryId).orElse(null);
+    public DeliveryDTO getDeliveryDTO(Long deliveryId) {
+        Delivery delivery = deliveryRepository.findById(deliveryId).orElse(null);
+
+        if (delivery == null) {
+            return null;
+        }
+
+        List<Gate> gates = gateRepository.findByDeliveryId(deliveryId);
+
+        return DeliveryDTO.convertToDeliveryDTO(delivery, gates);
     }
 }
