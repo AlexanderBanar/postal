@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static com.banar.postal.controller.PostOfficeController.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -174,6 +175,38 @@ class PostOfficeControllerTest {
                 .andExpect(mvcResult ->
                         mvcResult.getResolvedException().getClass().equals(IllegalArgumentException.class));
     }
+
+//    @Test
+//    public void getStatusAndOk() throws Exception {
+//        Delivery delivery = deliveryRepository.saveAndFlush(getPreparedDelivery());
+//        PostOffice postOffice = postOfficeRepository.saveAndFlush(getPreparedPostOffice1());
+//
+//        mockMvc.perform(post(ARRIVE_AT_POST_OFFICE, delivery.getId(), postOffice.getId())
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//
+//        mockMvc.perform(post(DEPART_FROM_POST_OFFICE, delivery.getId(), postOffice.getId())
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//
+//        mockMvc.perform(post(RECEIVE_BY_ADDRESSEE, delivery.getId())
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//
+//        final String path = "/status/" + delivery.getId();
+//        System.out.println(path);
+//
+//        Delivery updatedDelivery = deliveryRepository.findById(delivery.getId()).orElse(new Delivery());
+//        mockMvc.perform(get(path)
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.gates").value("gate"));
+//
+//    }
 
     private void registerNokTry(Delivery delivery) throws Exception {
         mockMvc.perform(post(REGISTER_NEW_DELIVERY)
