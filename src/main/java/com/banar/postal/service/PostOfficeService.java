@@ -49,9 +49,8 @@ public class PostOfficeService {
         }
 
         gate.setDepartureDate(LocalDate.now());
-        gateRepository.saveAndFlush(gate);
 
-        return true;
+        return gateRepository.saveAndFlush(gate).getId().equals(gate.getId());
     }
 
     public boolean processReceipt(Long deliveryId) {
@@ -71,9 +70,8 @@ public class PostOfficeService {
         }
 
         delivery.setReceived(true);
-        deliveryRepository.saveAndFlush(delivery);
 
-        return true;
+        return deliveryRepository.saveAndFlush(delivery).getId().equals(deliveryId);
     }
 
     public DeliveryDTO getDeliveryDTO(Long deliveryId) {
