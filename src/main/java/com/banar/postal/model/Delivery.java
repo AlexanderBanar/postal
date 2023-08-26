@@ -2,6 +2,7 @@ package com.banar.postal.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
@@ -19,7 +20,10 @@ public class Delivery {
 
     @Column(name = "receiver_index")
     @NotBlank(message = "Receiver index is mandatory")
+    @Size(min = 2, max = 15, message = "index must be from 2 to 15 letters length")
     private String receiverIndex;
+
+    // TODO -> move validation to DeliveryDTO and check validation
 
     @Column(name = "receiver_address")
     @NotBlank(message = "Receiver address is mandatory")
