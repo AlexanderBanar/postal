@@ -1,7 +1,6 @@
 package com.banar.postal.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Entity
@@ -18,15 +17,12 @@ public class Delivery {
     private Long id;
 
     @Column(name = "receiver_index")
-    @NotBlank(message = "Receiver index is mandatory")
     private String receiverIndex;
 
     @Column(name = "receiver_address")
-    @NotBlank(message = "Receiver address is mandatory")
     private String receiverAddress;
 
     @Column(name = "receiver_name")
-    @NotBlank(message = "Receiver name is mandatory")
     private String receiverName;
 
     @Column(name = "is_received")

@@ -3,6 +3,8 @@ package com.banar.postal.dto;
 import com.banar.postal.model.Delivery;
 import com.banar.postal.model.DeliveryType;
 import com.banar.postal.model.Gate;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +19,17 @@ import java.util.List;
 @Component
 public class DeliveryDTO {
     private Long id;
+
+    @NotBlank(message = "Receiver index is mandatory")
+    @Size(min = 2, max = 15, message = "Index must be from 2 to 15 letters length")
     private String receiverIndex;
+
+    @NotBlank(message = "Receiver address is mandatory")
     private String receiverAddress;
+
+    @NotBlank(message = "Receiver name is mandatory")
     private String receiverName;
+
     private boolean isReceived = false;
     private DeliveryType type = DeliveryType.UNDEFINED;
     private List<Gate> gates;
