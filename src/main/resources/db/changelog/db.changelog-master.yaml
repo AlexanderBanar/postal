@@ -1,9 +1,4 @@
 databaseChangeLog:
-
-  - changeSet:
-      id: 1
-      author: banar
-
   - include:
       file: DDL/001_create_tables.sql
       relativeToChangelogFile: true
