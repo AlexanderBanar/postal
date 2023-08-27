@@ -8,8 +8,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postal
       - PGDATA=/var/lib/postgresql/data
-    volumes:
-      - ./db/postal/data:/var/lib/postgresql/data
+#    volumes:
+#      - ./db/postal/data:/var/lib/postgresql/data
     ports:
       - 5432:5432
     restart: always

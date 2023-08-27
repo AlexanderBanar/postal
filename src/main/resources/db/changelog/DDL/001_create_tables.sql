@@ -9,3 +9,20 @@ CREATE TABLE delivery (
     is_received boolean default false,
     delivery_type varchar(10) default 'UNDEFINED'
 );
+
+--changeset Banar Alexander: id-2
+CREATE TABLE post_office (
+    id integer primary key,
+    post_office_index varchar(15),
+    post_office_name varchar(255),
+    address varchar(255)
+);
+
+--changeset Banar Alexander: id-3
+CREATE TABLE gate (
+    id integer primary key,
+    delivery_id integer references delivery.id ON DELETE SET DEFAULT -1,
+    post_office_id integer references post_office.id ON DELETE SET DEFAULT -1,
+    arrival_date timestamp,
+    departure_date timestamp
+);
