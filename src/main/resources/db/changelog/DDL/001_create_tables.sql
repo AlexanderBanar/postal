@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset Banar Alexander: id-1
+--changeset Banar_Alexander: id_1
 CREATE TABLE delivery (
     id integer primary key,
     receiver_index varchar(15),
@@ -10,7 +10,7 @@ CREATE TABLE delivery (
     delivery_type varchar(10) default 'UNDEFINED'
 );
 
---changeset Banar Alexander: id-2
+--changeset Banar_Alexander: id_2
 CREATE TABLE post_office (
     id integer primary key,
     post_office_index varchar(15),
@@ -18,7 +18,7 @@ CREATE TABLE post_office (
     address varchar(255)
 );
 
---changeset Banar Alexander: id-3
+--changeset Banar_Alexander: id_3
 CREATE TABLE gate (
     id integer primary key,
     delivery_id integer references delivery.id ON DELETE SET DEFAULT -1,
