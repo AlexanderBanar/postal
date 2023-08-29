@@ -7,13 +7,12 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.1.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<groupId>com.banar</groupId>
 	<artifactId>postal</artifactId>
 	<version>0.0.1</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<name>postal</name>
 
 	<description>Post Office Application</description>
