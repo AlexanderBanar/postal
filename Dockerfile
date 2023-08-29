@@ -1,4 +1,6 @@
 FROM openjdk
-WORKDIR chat
-ADD target/postal-0.0.1.war postal-0.0.1.war
-ENTRYPOINT java -jar postal-0.0.1.war
+WORKDIR postal
+ADD target/postal-0.0.1.jar postal.jar
+ENTRYPOINT java -jar postal.jar
+#build the jar of the app: mvn clean package
+#build the image: docker build -t postal .
