@@ -35,9 +35,9 @@ class PostOfficeControllerTest {
     private static final String RECEIVER_ADDRESS = "address";
     private static final String RECEIVER_NAME = "Ivan";
     private static final String RECEIVER_INDEX = "index";
-    private static final String POST_OFFICE_ADDRESS = "Post Office address";
+    private static final String POST_OFFICE_ADDRESS = "PO address";
     private static final String POST_OFFICE_NAME = "Post Office";
-    private static final String POST_OFFICE_INDEX = "Post Office index";
+    private static final String POST_OFFICE_INDEX = "PO index";
     private static final Long WRONG_ID = 5L;
 
     @Autowired
